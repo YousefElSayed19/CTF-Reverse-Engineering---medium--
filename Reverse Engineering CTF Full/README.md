@@ -1,6 +1,6 @@
 # Reverse Engineering CTF — Task 14 / Challenge #1
 
-**Participant:** Youzev Sayed
+**Participant:** yousef elsayed
 **Domain:** Reverse Engineering
 **Difficulty:** Medium
 **Flag:** `duck{4yBlGzSTp+5sP4Q3!eG#fE$gHGYjkpQQ}`
