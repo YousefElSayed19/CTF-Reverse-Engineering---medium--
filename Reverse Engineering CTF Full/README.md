@@ -3,7 +3,7 @@
 **Participant:** yousef elsayed
 **Domain:** Reverse Engineering
 **Difficulty:** Medium
-**flag:**duck{...}
+**flag:** duck{...}
 
 ## What this is
 
