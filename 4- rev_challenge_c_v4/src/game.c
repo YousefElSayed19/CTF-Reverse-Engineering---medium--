@@ -76,9 +76,15 @@ static void xor_repeating(unsigned char *data, int len, const unsigned char *key
 // Masked bytes of: base64( xor_repeating("r3v3rs3_m3_pl2", XOR_KEY) )
 // (precomputed; each byte here is the real base64 character XOR'd with
 // MASK_BYTE, so this does NOT read as plain text in a hex/strings view)
+// Trailing 0x00 is NOT part of the real data (only the first 20 bytes are
+// used) -- it exists only so this symbol always has a null byte directly
+// after its real content in memory, regardless of what the compiler places
+// next. That stops Ghidra's decompiler from rendering this as a "merged"
+// string with whatever string literal happens to follow it in .rdata.
 static const unsigned char MASKED_B64[] = {
     0x4e,0x50,0x40,0x51,0x44,0x6b,0x6d,0x40,0x52,0x6f,0x35,0x6c,0x40,0x42,
-    0x5b,0x53,0x4b,0x76,0x44,0x3c
+    0x5b,0x53,0x4b,0x76,0x44,0x3c,
+    0x00
 };
 #define MASKED_B64_LEN 20
 
@@ -125,12 +131,24 @@ int run_quiz(void) {
         return 0;
     }
 
-    printf("What is the first byte of the XOR key, in hex? (e.g. 4B)\n> ");
+    printf("What are the 4 bytes of the XOR key, in hex, in order?\n");
+    printf("(format: XX XX XX XX, spaces optional)\n> ");
     if (!fgets(answer, sizeof(answer), stdin)) return 0;
     answer[strcspn(answer, "\n")] = 0;
-    if (strcmp(answer, "4B") != 0 && strcmp(answer, "4b") != 0) {
-        printf("\n[-] Incorrect. Access denied.\n");
-        return 0;
+    {
+        char normalized[64];
+        int ni = 0;
+        for (int i = 0; answer[i] != '\0' && ni < (int)sizeof(normalized) - 1; i++) {
+            if (answer[i] == ' ') continue;
+            char c = answer[i];
+            if (c >= 'a' && c <= 'z') c = (char)(c - 'a' + 'A');
+            normalized[ni++] = c;
+        }
+        normalized[ni] = '\0';
+        if (strcmp(normalized, "4B337921") != 0) {
+            printf("\n[-] Incorrect. Access denied.\n");
+            return 0;
+        }
     }
 
     printf("What is the name of the function that verifies the password?\n> ");
@@ -176,9 +194,11 @@ static const unsigned char XOR_KEY_2[] = { 0x7A, 0x1C, 0x93 };
 #define XOR_KEY_2_LEN 3
 #define MASK_BYTE_2 0x5A
 
+// Same trailing-0x00 trick as MASKED_B64 above, for the same reason.
 static const unsigned char MASKED_B64_2[] = {
     0x1d,0x02,0x09,0x3d,0x1d,0x02,0x3f,0x3d,0x19,0x1f,0x0a,0x37,
-    0x1c,0x12,0x19,0x30,0x1d,0x02,0x3c,0x17,0x1f,0x02,0x34,0x2b
+    0x1c,0x12,0x19,0x30,0x1d,0x02,0x3c,0x17,0x1f,0x02,0x34,0x2b,
+    0x00
 };
 #define MASKED_B64_2_LEN 24
 

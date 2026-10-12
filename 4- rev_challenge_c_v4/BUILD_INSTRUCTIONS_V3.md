@@ -30,7 +30,7 @@ gcc -o checker.exe checker.c aes.c sha256.c -Wall
 ### game.exe
 شغله واتبع الترتيب:
 1. الباسورد: `r3v3rs3_m3_pl2`
-2. أسئلة الكويز: `4` ثم `4B` ثم `verify_sys_integrity`
+2. أسئلة الكويز: `4` ثم `4B 33 79 21` (الأربع بايتات كاملين، بمسافات أو من غيرها) ثم `verify_sys_integrity`
 3. لعبة التخمين: `7`
 4. هيطلعلك: `ch3ck3r_unl0ck_key` (ده password 2)
 
