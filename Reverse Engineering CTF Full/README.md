@@ -13,7 +13,6 @@ A custom-built, two-binary reverse engineering crackme (`game.exe` + `checker.ex
 
 ```
 .
-├── BUILD_INSTRUCTIONS_V3.md   ← how to compile game.exe / checker.exe from source
 │
 ├── bin/                        ← the compiled, playable challenge files
 │   ├── game.exe
@@ -28,6 +27,7 @@ A custom-built, two-binary reverse engineering crackme (`game.exe` + `checker.ex
 │   └── image*.png              ← screenshots referenced from Walkthrough.md
 │
 └── src/                         ← full source code (private repo only — never ship to participants)
+    ├── BUILD_INSTRUCTIONS.md   ← how to compile game.exe / checker.exe from source
     ├── game.c
     ├── checker.c
     ├── aes.c / aes.h
