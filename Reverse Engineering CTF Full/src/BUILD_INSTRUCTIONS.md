@@ -38,7 +38,17 @@ Run it and follow this order:
 Run it and follow this order:
 1. Password: `ch3ck3r_unl0ck_key` (from `game.exe`)
 2. Hex value: `2bb50ef99ea5dcea300e6efd3d8085e4`
-3. It should print the flag: `duck{4yBlGzSTp+5sP4Q3!eG#fE$gHGYjkpQQ}`
+3. It should print the flag: `duck{eu2nnbgpi7ulyg01q6vdt9be1mqi9aic}`
+
+> Note: only `checker.c`'s embedded `FLAG_CIPHERTEXT` changed (to match the
+> catalog's `^duck\{[a-z0-9_]{16,40}\}$` flag format — the previous flag
+> had uppercase letters and symbols, which the catalog rejects). The
+> password, the hex-value algorithm (`CHECK_SEED`/`CHECK_CONST`/
+> `compute_check_value`), and `game.exe` are all byte-for-byte unchanged,
+> so the documented solve path and every step of `Walkthrough.md` still
+> apply exactly as written — only the final printed flag differs.
+> `checker.exe` must be rebuilt from the updated `checker.c` (same build
+> command above) before shipping; `game.exe` does not need rebuilding.
 
 If these values don't match, there's a build problem — recheck the steps above.
 

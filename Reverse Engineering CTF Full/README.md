@@ -1,13 +1,40 @@
-# Reverse Engineering CTF — Task 14 / Challenge #1
+# Reverse Engineering CTF — dual-check
 
 **Participant:** yousef elsayed
-**Domain:** Reverse Engineering
+**Domain:** Reverse Engineering (static, binary track)
 **Difficulty:** Medium
-**flag:** duck{...}
+**Proposed catalog slug:** `labs/binary/dual-check/` (see `lab.yml`)
+**flag:** `duck{...}` — format and hash recorded in `lab.yml`, plaintext only
+inside `src/` build files (see `src/BUILD_INSTRUCTIONS.md`), never in this
+README or `lab.yml`.
 
 ## What this is
 
 A custom-built, two-binary reverse engineering crackme (`game.exe` + `checker.exe`), designed and built from scratch for this task, then solved end-to-end to validate it and produce the evidence below.
+
+## Delivery model (artifact-only exception)
+
+This lab has **no HTTP service and no host port**. The player is handed
+two Windows PE executables (`bin/game.exe`, `bin/checker.exe`) and runs
+them directly — natively on Windows, or under Wine on Linux/macOS. There
+is nothing to `docker compose up`, no `port:` field in `lab.yml`, and no
+server-side state: all checking happens inside the binaries themselves
+(`checker.exe`'s own password-hash and flag-decryption logic), plus the
+player-facing `check.py` at the lab root, which only checks a candidate
+flag against this directory's `lab.yml` — it does not run or replace the
+binaries.
+
+**Reset / state model:** not applicable. Neither binary has any persistent
+or server-side state, and neither password nor the flag rotates per
+playthrough — every player who solves it correctly gets the same, fixed
+flag. There is nothing to reset between attempts; running the binaries
+again is itself the reset.
+
+**Platform:** Windows PE only, by design — both binaries are compiled
+with MinGW/TDM-GCC targeting Windows, and `game.c` uses Windows-only APIs
+(`<windows.h>`) for console behavior. No Linux ELF build is provided, so
+no headless-checker CI step applies here; see `src/BUILD_INSTRUCTIONS.md`
+for the exact build command if a maintainer wants to rebuild from source.
 
 ## Repo layout
 
@@ -17,6 +44,9 @@ A custom-built, two-binary reverse engineering crackme (`game.exe` + `checker.ex
 ├── bin/                        ← the compiled, playable challenge files
 │   ├── game.exe
 │   └── checker.exe
+│
+├── lab.yml                     ← catalog metadata (track, difficulty, flag_hash, techniques)
+├── check.py                    ← player-facing flag checker (reads lab.yml, no deps)
 │
 ├── documentation/              ← the written evidence/report (exported from Notion)
 │   ├── Objective ....md
@@ -46,7 +76,9 @@ A custom-built, two-binary reverse engineering crackme (`game.exe` + `checker.ex
 | Reproduce the full solve, step by step | `documentation/Walkthrough ....md` |
 | Understand the security root cause being demonstrated | `documentation/What Happened and Why (Root Cause) ....md` |
 | See mitigation recommendations for real-world systems | `documentation/Mitigation ....md` |
-| Rebuild the binaries from source | `BUILD_INSTRUCTIONS_V3.md` |
+| Rebuild the binaries from source | `src/BUILD_INSTRUCTIONS.md` |
+| Check a candidate flag | `check.py "duck{...}"` |
+| See catalog metadata (track, difficulty, flag hash) | `lab.yml` |
 
 ## Design summary
 
@@ -62,3 +94,14 @@ A custom-built, two-binary reverse engineering crackme (`game.exe` + `checker.ex
 - [x] Flag confirmed reproducible via two independent paths (running `checker.exe`, and manual offline decryption)
 - [x] `strings` scan confirms no leakage of flag/passwords on either binary
 - [x] Full Walkthrough, Objective, Public Briefing, Root Cause and Mitigation documentation completed
+- [x] Flag regenerated to be fully random and catalog-format-compliant (`^duck\{[a-z0-9_]{16,40}\}$`); `lab.yml`
+      created with its SHA-256 `flag_hash`
+- [x] `checker.c`'s embedded flag ciphertext updated to match — password, hex-value algorithm, and `game.exe`
+      are all byte-for-byte unchanged, so the documented Walkthrough solve path still applies exactly as written
+- [x] Chain logic re-verified end-to-end on a Linux-compiled test build of the patched `checker.c` (same
+      documented password + hex value → new flag; wrong password and wrong hex value both still correctly rejected)
+- [ ] **`checker.exe` still needs to be rebuilt from the updated `checker.c`** on a Windows machine with
+      MinGW/TDM-GCC (same command as in `src/BUILD_INSTRUCTIONS.md`) before this is shippable — the Linux
+      rebuild above only verified the logic, since this lab ships Windows PE binaries, not ELF
+- [x] `check.py` added at the lab root; verifies a candidate flag against `lab.yml`'s `flag_hash`, no
+      dependencies beyond the standard library
