@@ -5,16 +5,19 @@
 `dual-check` is an offline, artifact-only static reverse-engineering
 challenge: two independent Windows PE binaries, `game.exe` and
 `checker.exe`, cryptographically bound so that neither one alone yields
-the flag. There is no network service, no server, and no host port —
-the player receives the two executables and a flag-checking script, and
-does everything locally.
+the flag. There is no network service and no server the solve depends
+on — the player receives the two executables and a flag-checking
+script, and does everything locally. A distribution-only
+`docker-compose.yml` exists (see `../README.md`, "Delivery model") purely
+to satisfy the catalog's general compose/validator requirement; nothing
+in the intended solve path touches it.
 
 | Property | Value |
 | --- | --- |
 | Track | binary (static reverse engineering) |
 | Difficulty | medium |
 | Platform | Windows PE only (MinGW/TDM-GCC build) |
-| Delivery | artifact-only — no HTTP service, no `port` in `lab.yml` |
+| Delivery | artifact-only for solving — `port: 8091` in `lab.yml` is only for the distribution-only helper, not the solve |
 | Tooling expected | Ghidra (or similar decompiler), Python or CyberChef |
 
 ## Learning objective

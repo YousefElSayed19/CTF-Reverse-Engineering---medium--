@@ -14,15 +14,20 @@ A custom-built, two-binary reverse engineering crackme (`game.exe` + `checker.ex
 
 ## Delivery model (artifact-only exception)
 
-This lab has **no HTTP service and no host port**. The player is handed
-two Windows PE executables (`bin/game.exe`, `bin/checker.exe`) and runs
-them directly — natively on Windows, or under Wine on Linux/macOS. There
-is nothing to `docker compose up`, no `port:` field in `lab.yml`, and no
-server-side state: all checking happens inside the binaries themselves
-(`checker.exe`'s own password-hash and flag-decryption logic), plus the
-player-facing `check.py` at the lab root, which only checks a candidate
-flag against this directory's `lab.yml` — it does not run or replace the
-binaries.
+This lab has **no HTTP service the solve depends on**. The player is
+handed two Windows PE executables (`bin/game.exe`, `bin/checker.exe`) and
+runs them directly — natively on Windows, or under Wine on Linux/macOS.
+No server-side state exists: all checking happens inside the binaries
+themselves (`checker.exe`'s own password-hash and flag-decryption
+logic), plus the player-facing `check.py` at the lab root, which only
+checks a candidate flag against this directory's `lab.yml` — it does not
+run or replace the binaries.
+
+`bin/docker-compose.yml` and `lab.yml`'s `port: 8091` exist only to
+satisfy the catalog's general `docker-compose.yml`/`validate.py`
+requirement — they run a distribution-only HTTP server for the two
+binaries and the docs, and nothing in the intended solve path ever
+touches that service.
 
 **Reset / state model:** not applicable. Neither binary has any persistent
 or server-side state, and neither password nor the flag rotates per
@@ -43,7 +48,8 @@ for the exact build command if a maintainer wants to rebuild from source.
 │
 ├── bin/                        ← the compiled, playable challenge files
 │   ├── game.exe
-│   └── checker.exe
+│   ├── checker.exe
+│   └── docker-compose.yml     ← distribution-only helper (see "Delivery model")
 │
 ├── lab.yml                     ← catalog metadata (track, difficulty, flag_hash, techniques)
 ├── check.py                    ← player-facing flag checker (reads lab.yml, no deps)
