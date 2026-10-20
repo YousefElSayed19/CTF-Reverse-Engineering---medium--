@@ -54,13 +54,16 @@ for the exact build command if a maintainer wants to rebuild from source.
 ├── lab.yml                     ← catalog metadata (track, difficulty, flag_hash, techniques)
 ├── check.py                    ← player-facing flag checker (reads lab.yml, no deps)
 │
-├── documentation/              ← the written evidence/report (exported from Notion)
-│   ├── Objective ....md
-│   ├── Public Briefing ....md
-│   ├── Walkthrough ....md
-│   ├── What Happened and Why (Root Cause) ....md
-│   ├── Mitigation ....md
-│   └── image*.png              ← screenshots referenced from Walkthrough.md
+├── docs/                        ← all written evidence/report + maintainer docs
+│   ├── README.md
+│   ├── player-briefing.mdx     ← player-facing description (no spoilers)
+│   ├── challenge-design.mdx
+│   ├── official-solution.mdx   ← full spoiler solve, including the narrated,
+│   │                               screenshot-illustrated walkthrough
+│   ├── security-report.mdx
+│   ├── remediation.mdx
+│   ├── validation-report.mdx
+│   └── images/                 ← screenshots referenced from official-solution.mdx
 │
 └── src/                         ← full source code (private repo only — never ship to participants)
     ├── BUILD_INSTRUCTIONS.md   ← how to compile game.exe / checker.exe from source
@@ -77,14 +80,15 @@ for the exact build command if a maintainer wants to rebuild from source.
 
 | If you want to... | Go to |
 |---|---|
-| Understand what the challenge is testing | `documentation/Objective ....md` |
-| See the player-facing description (no spoilers) | `documentation/Public Briefing ....md` |
-| Reproduce the full solve, step by step | `documentation/Walkthrough ....md` |
-| Understand the security root cause being demonstrated | `documentation/What Happened and Why (Root Cause) ....md` |
-| See mitigation recommendations for real-world systems | `documentation/Mitigation ....md` |
+| Understand what the challenge is testing | `docs/challenge-design.mdx` ("Skills exercised") |
+| See the player-facing description (no spoilers) | `docs/player-briefing.mdx` |
+| Reproduce the full solve, step by step, with screenshots | `docs/official-solution.mdx` ("Full narrated walkthrough") |
+| Understand the security root cause being demonstrated | `docs/security-report.mdx` |
+| See mitigation recommendations for real-world systems | `docs/remediation.mdx` |
 | Rebuild the binaries from source | `src/BUILD_INSTRUCTIONS.md` |
 | Check a candidate flag | `check.py "duck{...}"` |
 | See catalog metadata (track, difficulty, flag hash) | `lab.yml` |
+| See what's verified vs. still pending | `docs/validation-report.mdx` |
 
 ## Design summary
 
@@ -99,15 +103,18 @@ for the exact build command if a maintainer wants to rebuild from source.
 - [x] Full solve performed and verified (Ghidra static analysis + Python/CyberChef reproduction)
 - [x] Flag confirmed reproducible via two independent paths (running `checker.exe`, and manual offline decryption)
 - [x] `strings` scan confirms no leakage of flag/passwords on either binary
-- [x] Full Walkthrough, Objective, Public Briefing, Root Cause and Mitigation documentation completed
+- [x] Full walkthrough, objective/skills, player briefing, root-cause and mitigation documentation completed
+      (all consolidated under `docs/` — see `docs/README.md`)
 - [x] Flag regenerated to be fully random and catalog-format-compliant (`^duck\{[a-z0-9_]{16,40}\}$`); `lab.yml`
       created with its SHA-256 `flag_hash`
 - [x] `checker.c`'s embedded flag ciphertext updated to match — password, hex-value algorithm, and `game.exe`
-      are all byte-for-byte unchanged, so the documented Walkthrough solve path still applies exactly as written
+      are all byte-for-byte unchanged, so the documented walkthrough solve path still applies exactly as written
 - [x] Chain logic re-verified end-to-end on a Linux-compiled test build of the patched `checker.c` (same
       documented password + hex value → new flag; wrong password and wrong hex value both still correctly rejected)
-- [ ] **`checker.exe` still needs to be rebuilt from the updated `checker.c`** on a Windows machine with
-      MinGW/TDM-GCC (same command as in `src/BUILD_INSTRUCTIONS.md`) before this is shippable — the Linux
-      rebuild above only verified the logic, since this lab ships Windows PE binaries, not ELF
+- [x] **`checker.exe` rebuilt from the updated `checker.c`** on a Windows machine with MinGW/TDM-GCC and pushed —
+      independently re-confirmed by extracting the current `FLAG_IV`/`FLAG_CIPHERTEXT` byte arrays from
+      `src/checker.c` and finding those exact bytes embedded in the committed `bin/checker.exe` at the expected
+      offsets (see `docs/validation-report.mdx`'s evidence ledger). A live interactive re-solve of this exact
+      binary is still recommended but is no longer a blocker.
 - [x] `check.py` added at the lab root; verifies a candidate flag against `lab.yml`'s `flag_hash`, no
       dependencies beyond the standard library

@@ -43,6 +43,31 @@ own words:
 - Why splitting a secret across two components does not add real
   security if both components still ship to the same untrusted client.
 
+## Skills exercised
+
+- Static binary analysis (Ghidra: import, auto-analyze, navigate the
+  Symbol Tree, read decompiled pseudo-C, read raw bytes from
+  `.data`/`.rdata`).
+- Recognizing and reversing common client-side obfuscation techniques:
+  multi-byte XOR, Base64 encoding, byte-masking, and chained/sequential
+  bit transforms.
+- Identifying and bypassing a basic anti-debugging check without needing
+  to actually debug the binary.
+- Tracing a multi-stage gate (password → quiz → mini-game → second
+  password) across two independent binaries.
+- Replicating a custom algorithm read from decompiled code in an
+  external tool (Python or CyberChef) to compute a value that is not
+  stored anywhere in the binary.
+- Understanding how a symmetric cipher (AES-128-CBC) is used to protect
+  a secret at rest, and correctly extracting the key material, IV, and
+  ciphertext needed to decrypt it.
+
+The challenge is intentionally built so that no step can be skipped by a
+naive `strings` dump or by guessing — every value must be either
+extracted correctly or computed correctly, and the two binaries are
+cryptographically bound together (the flag cannot be obtained from
+either file alone).
+
 ## Story and actors
 
 There is no in-fiction company or service for this challenge — it is
@@ -107,9 +132,8 @@ checker.exe (fully independent binary; does not read game.exe at runtime)
 Everything the player needs — and everything an attacker has — ships in
 the two binaries. There is no server-side component and nothing held
 back; the entire point of the challenge, documented explicitly in
-`documentation/What Happened and Why (Root Cause).md`, is that this is
-the realistic (and realistically breakable) condition of any purely
-client-side validation design. `checker.exe` runs an
+`security-report.mdx`, is that this is the realistic (and realistically
+breakable) condition of any purely client-side validation design. `checker.exe` runs an
 `IsDebuggerPresent()`-style anti-debug check, but this is a deterrent
 against dynamic analysis only — the intended solve path is 100% static
 and does not require defeating it.
@@ -198,6 +222,5 @@ that the intended path works and nothing unintended was found.
   two executables needed beyond the player carrying a value over
   themselves).
 - The anti-debug check is included as a deliberately weak, realistic
-  deterrent (per `documentation/What Happened and Why (Root Cause).md`'s
-  framing) rather than as a genuine obstacle — the intended solve never
-  requires defeating it.
+  deterrent (per `security-report.mdx`'s framing) rather than as a
+  genuine obstacle — the intended solve never requires defeating it.
