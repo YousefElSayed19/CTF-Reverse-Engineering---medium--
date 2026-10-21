@@ -5,7 +5,7 @@ version: "3.9"
 # This lab has no server-side component and nothing in the intended solve
 # path touches this container — the player runs bin/game.exe and
 # bin/checker.exe directly (natively on Windows, or under Wine on
-# Linux/macOS). See ../README.md, "Delivery model (artifact-only
+# Linux/macOS). See README.md, "Delivery model (artifact-only
 # exception)".
 #
 # This service exists only so the catalog's general docker-compose.yml /
@@ -25,9 +25,9 @@ services:
     container_name: dualcheck-dist
     working_dir: /dist
     volumes:
-      - ./game.exe:/dist/game.exe:ro
-      - ./checker.exe:/dist/checker.exe:ro
-      - ../docs:/dist/docs:ro
+      - ./bin/game.exe:/dist/game.exe:ro
+      - ./bin/checker.exe:/dist/checker.exe:ro
+      - ./docs:/dist/docs:ro
     ports:
       - "8091:8091"
     command: ["python3", "-m", "http.server", "8091"]

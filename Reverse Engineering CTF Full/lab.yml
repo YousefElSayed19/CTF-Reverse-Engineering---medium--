@@ -1,4 +1,3 @@
----
 contract_version: 1
 name: dual-check
 track: binary
@@ -9,7 +8,7 @@ status: experimental
 techniques: []
 # Optional v1 fields (see contracts/lab.schema.json):
 # checkpoint_flag_hash: 0000000000000000000000000000000000000000000000000000000000000000
-# Optional distribution-only helper (bin/docker-compose.yml) serves the
+# Optional distribution-only helper (docker-compose.yml) serves the
 # two binaries + docs over plain HTTP for convenience; nothing in the
 # intended solve path uses it. This lab is still artifact-only for
 # solving — the player runs the binaries directly. See README.md's
@@ -19,4 +18,3 @@ port: 8091
 # Proposed technique slugs (pages not yet written under content/technique/ —
 # add them and uncomment once authored):
 # techniques: [static-binary-analysis-ghidra, chained-byte-transform-reversing, client-side-obfuscation-xor-base64-masking, aes-key-derivation-from-split-secrets]
----

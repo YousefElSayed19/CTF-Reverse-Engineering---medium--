@@ -23,7 +23,7 @@ logic), plus the player-facing `check.py` at the lab root, which only
 checks a candidate flag against this directory's `lab.yml` — it does not
 run or replace the binaries.
 
-`bin/docker-compose.yml` and `lab.yml`'s `port: 8091` exist only to
+`docker-compose.yml` and `lab.yml`'s `port: 8091` exist only to
 satisfy the catalog's general `docker-compose.yml`/`validate.py`
 requirement — they run a distribution-only HTTP server for the two
 binaries and the docs, and nothing in the intended solve path ever
@@ -48,9 +48,9 @@ for the exact build command if a maintainer wants to rebuild from source.
 │
 ├── bin/                        ← the compiled, playable challenge files
 │   ├── game.exe
-│   ├── checker.exe
-│   └── docker-compose.yml     ← distribution-only helper (see "Delivery model")
+│   └── checker.exe
 │
+├── docker-compose.yml          ← distribution-only helper (see "Delivery model")
 ├── lab.yml                     ← catalog metadata (track, difficulty, flag_hash, techniques)
 ├── check.py                    ← player-facing flag checker (reads lab.yml, no deps)
 │
